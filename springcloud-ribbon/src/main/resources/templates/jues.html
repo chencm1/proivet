@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入easyui样式文件 -->
+    <link type="text/css" rel="stylesheet" href="/jquery-easyui-1.5/themes/default/easyui.css">
+    <!-- 引入easyui图标样式文件 -->
+    <link type="text/css" rel="stylesheet" href="/jquery-easyui-1.5/themes/icon.css">
+    <!-- 引入jquery js文件 -->
+    <script type="text/javascript"  src="/jquery-easyui-1.5/jquery.min.js"></script>
+    <!-- 引入easyui的js文件 -->
+    <script type="text/javascript" src="/jquery-easyui-1.5/jquery.easyui.min.js"></script>
+    <!-- 引文easyui支持中文js -->
+    <script type="text/javascript" src="/jquery-easyui-1.5/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/jquery-easyui-1.5/util-js.js"></script>
+    <!-- 引入uploadify css js文件 -->
+    <link rel="stylesheet" href="/js/uploadify/uploadify.css">
+    <script type="text/javascript" src="/js/uploadify/jquery.uploadify.min.js"></script>
+
+
+</head>
+<body>
+<div id="searchDiv">
+    <a href="javascript:addOpen()" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">新增</a>
+</div>
+<table id="count" fit=true method="post"></table>
+
+<!-- 定义弹框 -->
+<div id="myDialog" class="easyui-dialog" data-options="title:'新增',iconCls:'icon-add',modal:true,closed:true,buttons:'#myButton'"
+     style="width:800px; height:500px">
+    <form id="myForm" method="post">
+        <table>
+            <input type="hidden" name="id">
+            <tr>
+                <td>名字</td>
+                <td><input class="easyui-textbox" name="name"></td>
+            </tr>
+            <tr>
+                <td>职位</td>
+                <td><input class="easyui-combobox" name="ltype" id="type2"></td>
+            </tr>
+            <tr>
+                <td>性别</td>
+                <td><input class="easyui-textbox" name="lpout" ></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- 定义按钮 -->
+<div id="myButton">
+    <a href="javascript:addLog()" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+    <a href="javascript:closeDig()" class="easyui-linkbutton"  data-options="iconCls:'icon-cancel'">关闭</a>
+</div>
+</body>
+<script type="text/javascript" th:inline="none">
+    $(function () {
+        initUserTable();
+        typeu();
+    })
+
+
+    function initUserTable(){
+        $("#count").datagrid({
+            url:"../select",
+            pagination:true,
+            toolbar:"#toolbar",
+            columns:[[
+                {field:'xxx',title:'id',width:'10%',checkbox:true},
+
+                {field:'id',title:'主键',width:'100'},
+                {field:'name',title:'名称',width:100},
+
+                {field:'typel',title:'名称',width:100},
+                {field:'lpout',title:'名称',width:100},
+
+                {field:"tools",title:"操作",formatter:function(value,row,index){
+                        return "<a href='javascript:openUpdate("+row.id+")'>修改</a> <a href='javascript:deleteItem("+row.id+")'>删除</a>";
+                    }}
+            ]]
+        })
+    }
+    function deleteItem(id){
+        alert(id);
+        $.ajax({
+            url:'../delete',
+            type:'post',
+            data:{id:id},
+            success:function(){
+                if(confirm("是否确认删除这条数据?")){
+                    location.reload();
+                }
+            }
+        })
+    }
+    //新增
+    function addLog() {
+        $("#myForm").form("submit",{
+            url:"/adduser",
+            success:function(){
+                $.messager.alert("提示","保存成功！","info");
+                location.reload();
+                //关闭弹框
+                $("#myDialog").dialog('close');
+            }
+        })
+    }
+
+    //打开新增弹框
+    function addOpen(){
+        //重置表单
+        $("#myForm").form("reset");
+
+        $('#myDialog').dialog({
+            title:'新增用户',
+            iconCls:'icon-add',
+            closed:false //true 关闭 false 打开
+        })
+    }
+    //关闭按钮
+    function closeDig(){
+        $("#myDialog").dialog('close');
+    }
+    //查询职位
+    function typeu(){
+        $("#type2").combobox({
+            url:"../ltype",
+            valueField:"id",
+            textField:"name",
+        })
+    }
+    //打开修改弹框
+    function openUpdate(bookId){
+        $.ajax({
+            url:"../findUserById",
+            type:"post",
+            data:{"bookId":bookId},
+            success:function(data){
+                $("#userForm").form("load",data);
+                $("#userDialog").dialog({
+                    title:"修改用户",
+                    closed:false
+                })
+            }
+        })
+
+    }
+    //新增
+    function addLog() {
+        $("#myForm").form("submit",{
+            url:"../saveUser",
+            success:function(){
+                $.messager.alert("提示","保存成功！","info");
+                location.reload();
+                //关闭弹框
+                $("#myDialog").dialog('close');
+            }
+        })
+    }
+    //回显
+    function openUpdate(id){
+        $.ajax({
+            url:'/queryid',
+            type:"post",
+            data:{id:id},
+            success:function(data){
+                //数据回显
+                $("#myForm").form("load",data);
+                $('#myDialog').dialog({
+                    title:'修改用户',
+                    iconCls:'icon-add',
+                    closed:false //true 关闭 false 打开
+                })
+            }
+        })
+    }
+
+</script>
+</html>

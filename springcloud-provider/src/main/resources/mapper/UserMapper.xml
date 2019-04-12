@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.mapper.UserMapper">
+
+
+
+    <!-- 根据id查询用户信息 -->
+    <select id="findUserById" parameterType="int" resultType="com.jk.model.User">
+	select u.* from lming u
+			where u.id = #{id}
+		group by u.id
+
+	</select>
+	<insert id="useradd" parameterType="com.jk.model.User" useGeneratedKeys="true" keyProperty="id">
+		insert into lming(name,ltype,lpout) values(#{name},#{ltype},#{lpout})
+
+	</insert>
+	<update id="updateuser" parameterType="com.jk.model.User" >
+     update lming u set u.name=#{name},u.ltype=#{ltype},u.lpout=#{lpout} where u.id=#{id}
+
+	</update>
+
+</mapper>
